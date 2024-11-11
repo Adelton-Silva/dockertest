@@ -21,7 +21,7 @@ RUN dotnet build "MyApi.csproj" -c Release -o /app/build
 
 # Etapa de publicação
 FROM build AS publish
-RUN dotnet publish "MyApi.csproj" -c Release -o /app/publish
+RUN dotnet publish "MyApi/MyApi.csproj" -c Release -o /app/publish
 
 # Etapa final: criar a imagem para execução
 FROM base AS final
