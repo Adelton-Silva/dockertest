@@ -1,18 +1,59 @@
-name: Docker Image CI
+name: .NET CI/CD
 
+# Este workflow será acionado nas mudanças para a branch 'main'
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
-  build:
-
+  # Primeiro Job: build e testar
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Checkout do código
+      uses: actions/checkout@v2
+
+    - name: Configurar .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.403' # Especifique a versão do .NET Core
+
+    - name: Restaurar pacotes
+      run: dotnet restore
+
+    - name: Build da aplicação
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Executar testes
+      run: dotnet test --no-restore --verbosity normal
+
+  # Segundo Job: Deploy
+  deploy:
+    needs: build-and-test # Este job só será executado após o sucesso do job 'build-and-test'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v2
+
+    - name: Configurar .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.403'
+
+    - name: Publicar aplicação
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Deploy para o servidor (via SSH, FTP, etc.)
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOST: ${{ secrets.HOST }}
+        USERNAME: ${{ secrets.USERNAME }}
+      run: |
+        # Comando para realizar o deploy, por exemplo:
+        scp -r ./publish/* $USERNAME@$HOST:/caminho/do/deploy
