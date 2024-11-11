@@ -7,7 +7,7 @@ EXPOSE 443
 # Etapa de compilação, usando o SDK do .NET 8
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["MyApi.csproj", "./"]
+COPY ["MyApi/MyApi.csproj", "./"]
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libc6 \
