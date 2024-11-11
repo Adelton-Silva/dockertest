@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scc-deployment
+  labels:
+    app: scc
+spec:
+  replicas: 20
+  selector:
+    matchLabels:
+      app: scc
+  template:
+    metadata:
+      labels:
+        app: scc
+    spec:
+      containers:
+        - name: scc
+          image: nginx:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          
