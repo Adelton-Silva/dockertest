@@ -17,7 +17,7 @@ RUN apt-get update && \
         zlib1g
 RUN dotnet restore "MyApi.csproj"
 COPY . .
-RUN dotnet build "MyApi.csproj" -c Release -o /app/build
+RUN dotnet build "MyApi/MyApi.csproj" -c Release -o /app/build
 
 # Etapa de publicação
 FROM build AS publish
